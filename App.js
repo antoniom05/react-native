@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // Importing FontAwesome icons
+import { FontAwesome } from '@expo/vector-icons'; 
 
 const HomeScreen = () => {
 
@@ -9,11 +9,18 @@ const HomeScreen = () => {
     { id: 1, title: 'Dune 2', imageUrl: require('./assets/dune2.webp') },
     { id: 2, title: 'Oppenheimer', imageUrl: require('./assets/openhaimer.jpg') },
     { id: 3, title: 'Barbie', imageUrl: require('./assets/barbie.jpg') },
-    { id: 4, title: 'Migration', imageUrl: require('./assets/migration.jpg') },
-
+    { id: 4, title: 'Transformes', imageUrl: require('./assets/transformers.jpg') },
+    { id: 5, title: 'Joker', imageUrl: require('./assets/joker.jpg') },
+    { id: 6, title: 'Batman', imageUrl: require('./assets/batman.jpg') },
+    { id: 7, title: 'BeeKeeper', imageUrl: require('./assets/beekeeper.jpg') },
+    { id: 8, title: 'Good Fellas', imageUrl: require('./assets/goodfellas.jpg') },
+    { id: 9, title: 'Alien', imageUrl: require('./assets/alien.jpg') },
+    { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg') },
   ];
 
   const renderMovieItem = ({ item }) => (
+
+    
     <TouchableOpacity style={styles.movieItem}>
       <Image
         source={item.imageUrl}
@@ -23,7 +30,6 @@ const HomeScreen = () => {
       <Text style={styles.movieItemTitle}>{item.title}</Text>
     </TouchableOpacity>
   );
-
 
   return (
     <View style={styles.container}>
@@ -100,6 +106,17 @@ const HomeScreen = () => {
         <View style={styles.continueWatchingContainer}>
           <Text style={styles.sectionTitle}>Continue Watching</Text>
           {/* List of Continue Watching items */}
+          <FlatList
+            horizontal
+            data={trendingMovies}
+            renderItem={renderMovieItem}
+            keyExtractor={item => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.movieList}
+          />
+           <View style={styles.progressBar}>
+        <View style={[styles.progress, { width: '100%' }]} />
+      </View>
         </View>
 
         {/* More Sections as Needed */}
@@ -165,6 +182,7 @@ const styles = StyleSheet.create({
   },
   continueWatchingContainer: {
     marginTop: 20,
+    marginBottom: 20,
   },
   movieList: {
     paddingHorizontal: 5,
@@ -181,21 +199,17 @@ const styles = StyleSheet.create({
     color: '#FFF',
     marginTop: 5,
   },
-  playButtonContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -25 }, { translateY: -25 }], // Centering the button
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Semi-transparent white background
-    justifyContent: 'center',
-    alignItems: 'center',
+  progressBar: {
+    backgroundColor: '#333',
+    height: 5,
+    width: 120, // Adjust width as needed
+    borderRadius: 2,
+    marginTop: 5,
   },
-  playButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
+  progress: {
+    backgroundColor: 'red',
+    height: '100%',
+    borderRadius: 2,
   },
 });
 
