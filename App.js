@@ -1,35 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; 
+import Carousel from 'react-native-snap-carousel';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
-
+  const [shuffledTrendingMovies, setShuffledTrendingMovies] = useState([]);
+  const [shuffledContinueWatchingMovies, setShuffledContinueWatchingMovies] = useState([]);
 
   const trendingMovies = [
-    { id: 1, title: 'Dune 2', imageUrl: require('./assets/dune2.webp') },
-    { id: 2, title: 'Oppenheimer', imageUrl: require('./assets/openhaimer.jpg') },
-    { id: 3, title: 'Barbie', imageUrl: require('./assets/barbie.jpg') },
-    { id: 4, title: 'Transformes', imageUrl: require('./assets/transformers.jpg') },
-    { id: 5, title: 'Joker', imageUrl: require('./assets/joker.jpg') },
-    { id: 6, title: 'Batman', imageUrl: require('./assets/batman.jpg') },
-    { id: 7, title: 'BeeKeeper', imageUrl: require('./assets/beekeeper.jpg') },
-    { id: 8, title: 'Good Fellas', imageUrl: require('./assets/goodfellas.jpg') },
-    { id: 9, title: 'Alien', imageUrl: require('./assets/alien.jpg') },
-    { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg') },
+    { id: 1, title: 'Dune 2', imageUrl: require('./assets/dune2.webp'), progress: 0.6, genre: 'Action' },
+    { id: 2, title: 'Oppenheimer', imageUrl: require('./assets/openhaimer.jpg'), progress: 0.3, genre: 'Thriller' },
+    { id: 3, title: 'Barbie', imageUrl: require('./assets/barbie.jpg'), progress: 0.1, genre: 'Comedy' },
+    { id: 4, title: 'Transformes', imageUrl: require('./assets/transformers.jpg'), progress: 0.8, genre: 'Action' },
+    { id: 5, title: 'Joker', imageUrl: require('./assets/joker.jpg'), progress: 0.5, genre: 'Thriller' },
+    { id: 6, title: 'Batman', imageUrl: require('./assets/batman.jpg'), progress: 0.2, genre: 'Action' },
+    { id: 7, title: 'BeeKeeper', imageUrl: require('./assets/beekeeper.jpg'), progress: 0.4, genre: 'Horror' },
+    { id: 8, title: 'Good Fellas', imageUrl: require('./assets/goodfellas.jpg'), progress: 0.7, genre: 'Thriller' },
+    { id: 9, title: 'Alien', imageUrl: require('./assets/alien.jpg'), progress: 0.9, genre: 'Horror' },
+    { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg'), progress: 0.4, genre: 'Action' },
   ];
 
-  const renderMovieItem = ({ item }) => (
+  useEffect(() => {
+    // Shuffle movies for Trending Now section
+    shuffleMovies(trendingMovies, setShuffledTrendingMovies);
+    // Shuffle movies for Continue Watching section
+    shuffleMovies(trendingMovies, setShuffledContinueWatchingMovies);
+  }, []);
 
-    
-    <TouchableOpacity style={styles.movieItem}>
-      <Image
-        source={item.imageUrl}
-        style={styles.movieItemImage}
-        resizeMode="cover"
-      />
-      <Text style={styles.movieItemTitle}>{item.title}</Text>
-    </TouchableOpacity>
-  );
+  const shuffleMovies = (movies, setShuffledMovies) => {
+    const shuffled = [...movies].sort(() => Math.random() - 0.5);
+    setShuffledMovies(shuffled);
+  };
+
+  const renderMovieItem = ({ item, section }) => {
+    if (section === "continueWatching") {
+      return (
+        <TouchableOpacity style={styles.movieItem}>
+          <Image
+            source={item.imageUrl}
+            style={styles.movieItemImage}
+            resizeMode="cover"
+          />
+          <View style={styles.progressBar}>
+            <View style={{ ...styles.progress, width: `${item.progress * 100}%` }} />
+          </View>
+          <Text style={styles.movieItemTitle}>{item.title}</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <TouchableOpacity style={styles.movieItem}>
+          <Image
+            source={item.imageUrl}
+            style={styles.movieItemImage}
+            resizeMode="cover"
+          />
+          <Text style={styles.movieItemTitle}>{item.title}</Text>
+        </TouchableOpacity>
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -42,19 +72,20 @@ const HomeScreen = () => {
         />
       </View>
 
-       {/* Content */}
-       <ScrollView style={styles.content}>
+      {/* Content */}
+      <ScrollView style={styles.content}>
         {/* Featured Content */}
         <View style={styles.featuredContainer}>
-          <Image
-            source={require('./assets/kungfupanda.jpg')}
-            style={styles.featuredImage}
-            resizeMode="cover"
+          <Carousel
+            data={shuffledTrendingMovies}
+            renderItem={({ item }) => renderMovieItem({ item, section: "featured" })}
+            sliderWidth={400}
+            itemWidth={120}
+            loop={true}
+            autoplay={true}
+            autoplayInterval={3000}
+            layout="default"
           />
-          {/* Play Button */}
-          <View style={styles.playButtonContainer}>
-            <Text style={styles.playButtonText}>Play</Text>
-          </View>
         </View>
 
         {/* Categories */}
@@ -88,14 +119,14 @@ const HomeScreen = () => {
           </ScrollView>
         </View>
 
- {/* Trending Now */}
- <View style={styles.trendingContainer}>
+        {/* Trending Now */}
+        <View style={styles.trendingContainer}>
           <Text style={styles.sectionTitle}>Trending Now</Text>
           {/* Horizontal FlatList for Trending Movies */}
           <FlatList
             horizontal
-            data={trendingMovies}
-            renderItem={renderMovieItem}
+            data={shuffledTrendingMovies}
+            renderItem={({ item }) => renderMovieItem({ item })}
             keyExtractor={item => item.id.toString()}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.movieList}
@@ -108,15 +139,12 @@ const HomeScreen = () => {
           {/* List of Continue Watching items */}
           <FlatList
             horizontal
-            data={trendingMovies}
-            renderItem={renderMovieItem}
+            data={shuffledContinueWatchingMovies}
+            renderItem={({ item }) => renderMovieItem({ item, section: "continueWatching" })}
             keyExtractor={item => item.id.toString()}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.movieList}
           />
-           <View style={styles.progressBar}>
-        <View style={[styles.progress, { width: '100%' }]} />
-      </View>
         </View>
 
         {/* More Sections as Needed */}
@@ -143,13 +171,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   featuredContainer: {
-    marginTop: 10,
+    marginTop: 20,
     alignItems: 'center',
   },
-  featuredImage: {
-    width: '100%',
-    height: 200,
+  featuredItem: {
+    marginRight: 10,
+    alignItems: 'center',
+  },
+  featuredItemImage: {
+    width: 300,
+    height: 180,
     borderRadius: 10,
+  },
+  featuredItemTitle: {
+    color: '#FFF',
+    marginTop: 5,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   categoriesContainer: {
     marginTop: 20,
@@ -200,16 +238,16 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   progressBar: {
-    backgroundColor: '#333',
+    width: '100%',
     height: 5,
-    width: 120, // Adjust width as needed
+    backgroundColor: '#444',
     borderRadius: 2,
+    overflow: 'hidden',
     marginTop: 5,
   },
   progress: {
-    backgroundColor: 'red',
     height: '100%',
-    borderRadius: 2,
+    backgroundColor: '#FFF',
   },
 });
 
