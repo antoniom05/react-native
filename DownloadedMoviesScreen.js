@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState, useLayoutEffect  } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const DownloadedMoviesScreen = () => {
+const DownloadedMoviesScreen = ({navigation}) => {
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+          headerShown: false,
+        });
+      }, [navigation]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Downloaded Movies Screen</Text>
