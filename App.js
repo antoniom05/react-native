@@ -5,10 +5,7 @@ import MainContainer from './MainContainer'
 const App = () => {
   return (
     <>
-      <MainContainer 
-      
-      
-      />
+      <MainContainer />
       
     </>
   )

@@ -26,6 +26,7 @@ const HomeScreen = ( {navigation }) => {
     { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg'), progress: 0.4, genre: 'Action' },
   ];
 
+
   useEffect(() => {
     shuffleMovies(trendingMovies, setShuffledTrendingMovies);
     shuffleMovies(trendingMovies, setShuffledContinueWatchingMovies);
@@ -160,17 +161,18 @@ const HomeScreen = ( {navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 5,
+    marginTop: 25,
     flex: 1,
     backgroundColor: '#000',
   },
   header: {
-    padding: 10,
+    padding: 5,
     alignItems: 'center',
   },
   logo: {
-    width: 120,
-    height: 40,
+    width: 100,
+    height: 35,
+    padding: '5%',
   },
   content: {
     flex: 1,
