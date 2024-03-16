@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useLayoutEffect  } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const HomeScreen = ( {navigation }) => {
+const HomeScreen = ({ navigation }) => {
   const [shuffledTrendingMovies, setShuffledTrendingMovies] = useState([]);
   const [shuffledContinueWatchingMovies, setShuffledContinueWatchingMovies] = useState([]);
 
@@ -12,24 +13,30 @@ const HomeScreen = ( {navigation }) => {
     });
   }, [navigation]);
 
-
   const trendingMovies = [
-    { id: 1, title: 'Dune 2', imageUrl: require('./assets/dune2.webp'), progress: 0.6, genre: 'Action' },
-    { id: 2, title: 'Oppenheimer', imageUrl: require('./assets/openhaimer.jpg'), progress: 0.3, genre: 'Thriller' },
-    { id: 3, title: 'Barbie', imageUrl: require('./assets/barbie.jpg'), progress: 0.1, genre: 'Comedy' },
-    { id: 4, title: 'Transformes', imageUrl: require('./assets/transformers.jpg'), progress: 0.8, genre: 'Action' },
-    { id: 5, title: 'Joker', imageUrl: require('./assets/joker.jpg'), progress: 0.5, genre: 'Thriller' },
-    { id: 6, title: 'Batman', imageUrl: require('./assets/batman.jpg'), progress: 0.2, genre: 'Action' },
-    { id: 7, title: 'BeeKeeper', imageUrl: require('./assets/beekeeper.jpg'), progress: 0.4, genre: 'Horror' },
-    { id: 8, title: 'Good Fellas', imageUrl: require('./assets/goodfellas.jpg'), progress: 0.7, genre: 'Thriller' },
-    { id: 9, title: 'Alien', imageUrl: require('./assets/alien.jpg'), progress: 0.9, genre: 'Horror' },
-    { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg'), progress: 0.4, genre: 'Action' },
+    { id: 1, title: 'Dune 2', imageUrl: require('./assets/dune2.webp'),  genres: ['Action'] },
+    { id: 2, title: 'Oppenheimer', imageUrl: require('./assets/openhaimer.jpg'), genres: ['Thriller', 'Drama'] },
+    { id: 3, title: 'Barbie', imageUrl: require('./assets/barbie.jpg'), genres: ['Comedy', 'Family'] },
+    { id: 4, title: 'Transformes', imageUrl: require('./assets/transformers.jpg'), progress: 0.8, genres: ['Action'] },
+    { id: 5, title: 'Joker', imageUrl: require('./assets/joker.jpg'),  genres: ['Thriller'] },
+    { id: 6, title: 'Batman', imageUrl: require('./assets/batman.jpg'), progress: 0.2, genres: ['Action'] },
+    { id: 7, title: 'BeeKeeper', imageUrl: require('./assets/beekeeper.jpg'), genres: ['Horror'] },
+    { id: 8, title: 'Good Fellas', imageUrl: require('./assets/goodfellas.jpg'), progress: 0.7, genres: ['Thriller'] },
+    { id: 9, title: 'Alien', imageUrl: require('./assets/alien.jpg'), progress: 0.9, genres: ['Horror'] },
+    { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg'), progress: 0.4, genres: ['Action'] },
+    { id: 11, title: 'Cars 1', imageUrl: require('./assets/cars1.jpeg'),  genres: ['Comedy', 'Family', 'Family'] },
+    { id: 12, title: 'Cars 2', imageUrl: require('./assets/cars2.jpg'), progress: 0.9, genres: ['Comedy', 'Family', 'Family'] },
+    { id: 13, title: 'Cars 3', imageUrl: require('./assets/cars3.jpeg'), progress: 0.9, genres: ['Comedy', 'Family', 'Family'] },
+    { id: 14, title: 'F&F 9', imageUrl: require('./assets/f9.jpg'), genres: ['Action'] },
+    { id: 15, title: 'Avatar', imageUrl: require('./assets/avatar.jpg'), genres: ['Family'] },
+    { id: 16, title: 'Ratatouille', imageUrl: require('./assets/ratatui.jpeg'), genres: ['Comedy', 'Family'] },
   ];
 
-
   useEffect(() => {
-    shuffleMovies(trendingMovies, setShuffledTrendingMovies);
-    shuffleMovies(trendingMovies, setShuffledContinueWatchingMovies);
+    const continueWatching = trendingMovies.filter(movie => movie.progress);
+    const trendingNow = trendingMovies.filter(movie => !movie.progress);
+    shuffleMovies(continueWatching, setShuffledContinueWatchingMovies);
+    shuffleMovies(trendingNow, setShuffledTrendingMovies);
   }, []);
 
   const shuffleMovies = (movies, setShuffledMovies) => {
@@ -38,44 +45,37 @@ const HomeScreen = ( {navigation }) => {
   };
 
   const renderMovieItem = ({ item, section }) => {
-    if (section === "continueWatching") {
-      return (
-        <TouchableOpacity style={styles.movieItem}>
-          <Image
-            source={item.imageUrl}
-            style={styles.movieItemImage}
-            resizeMode="cover"
-          />
+    return (
+      <TouchableOpacity style={styles.movieItem}>
+        <Image
+          source={item.imageUrl}
+          style={styles.movieItemImage}
+          resizeMode="cover"
+        />
+        {section === "continueWatching" && item.progress && (
           <View style={styles.progressBar}>
             <View style={{ ...styles.progress, width: `${item.progress * 100}%` }} />
           </View>
-          <Text style={styles.movieItemTitle}>{item.title}</Text>
-        </TouchableOpacity>
-      );
-    } else {
-      return (
-        <TouchableOpacity style={styles.movieItem}>
-          <Image
-            source={item.imageUrl}
-            style={styles.movieItemImage}
-            resizeMode="cover"
-          />
-          <Text style={styles.movieItemTitle}>{item.title}</Text>
-        </TouchableOpacity>
-      );
-    }
+        )}
+        <Text style={styles.movieItemTitle}>{item.title}</Text>
+      </TouchableOpacity>
+    );
   };
 
-  
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Image
-          source={require('./assets/icon.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.headerLeft}>
+          <Image
+            source={require('./assets/icon.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+        <TouchableOpacity style={styles.searchIcon}>
+          <Icon name="search" size={24} color="#FFF" />
+        </TouchableOpacity>
       </View>
 
       {/* Content */}
@@ -158,21 +158,29 @@ const HomeScreen = ( {navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
-    marginTop: 25,
+    marginTop: 45,
     flex: 1,
     backgroundColor: '#000',
   },
   header: {
-    padding: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  headerLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
     width: 100,
-    height: 35,
-    padding: '5%',
+    height: 45,
+    marginLeft: 1,
+  },
+  searchIcon: {
+    marginRight: 15,
   },
   content: {
     flex: 1,
