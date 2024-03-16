@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useLayoutEffect  } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 
-const MoviesScreen = ( {navigation }) => {
+const MoviesScreen = ({ navigation }) => {
   const [shuffledTrendingMovies, setShuffledTrendingMovies] = useState([]);
-  const [shuffledContinueWatchingMovies, setShuffledContinueWatchingMovies] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -26,10 +26,8 @@ const MoviesScreen = ( {navigation }) => {
     { id: 10, title: 'StarWars', imageUrl: require('./assets/starwars.jpeg'), progress: 0.4, genre: 'Action' },
   ];
 
-
   useEffect(() => {
     shuffleMovies(trendingMovies, setShuffledTrendingMovies);
-    shuffleMovies(trendingMovies, setShuffledContinueWatchingMovies);
   }, []);
 
   const shuffleMovies = (movies, setShuffledMovies) => {
@@ -37,36 +35,27 @@ const MoviesScreen = ( {navigation }) => {
     setShuffledMovies(shuffled);
   };
 
-  const renderMovieItem = ({ item, section }) => {
-    if (section === "continueWatching") {
+  const filterMoviesByCategory = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const renderMovieItem = ({ item }) => {
+    if (!selectedCategory || selectedCategory === 'Show All' || item.genre === selectedCategory) {
       return (
-        <TouchableOpacity style={styles.movieItem}>
+        <TouchableOpacity style={styles.movieItem} key={item.id}>
           <Image
             source={item.imageUrl}
             style={styles.movieItemImage}
             resizeMode="cover"
           />
-          <View style={styles.progressBar}>
-            <View style={{ ...styles.progress, width: `${item.progress * 100}%` }} />
-          </View>
           <Text style={styles.movieItemTitle}>{item.title}</Text>
         </TouchableOpacity>
       );
     } else {
-      return (
-        <TouchableOpacity style={styles.movieItem}>
-          <Image
-            source={item.imageUrl}
-            style={styles.movieItemImage}
-            resizeMode="cover"
-          />
-          <Text style={styles.movieItemTitle}>{item.title}</Text>
-        </TouchableOpacity>
-      );
+      return null;
     }
   };
 
-  
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -87,26 +76,20 @@ const MoviesScreen = ( {navigation }) => {
           {/* Horizontal ScrollView for Categories */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* Category Buttons */}
-            <TouchableOpacity style={styles.categoryButton}>
+            <TouchableOpacity style={styles.categoryButton} onPress={() => filterMoviesByCategory('Show All')}>
+              <Text style={styles.categoryButtonText}>Show All</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.categoryButton} onPress={() => filterMoviesByCategory('Action')}>
               <Text style={styles.categoryButtonText}>Action</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryButton}>
+            <TouchableOpacity style={styles.categoryButton} onPress={() => filterMoviesByCategory('Thriller')}>
               <Text style={styles.categoryButtonText}>Thriller</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryButton}>
+            <TouchableOpacity style={styles.categoryButton} onPress={() => filterMoviesByCategory('Horror')}>
               <Text style={styles.categoryButtonText}>Horror</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryButton}>
-              <Text style={styles.categoryButtonText}>Thriller</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryButton}>
-              <Text style={styles.categoryButtonText}>Anime</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryButton}>
+            <TouchableOpacity style={styles.categoryButton} onPress={() => filterMoviesByCategory('Comedy')}>
               <Text style={styles.categoryButtonText}>Comedy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.categoryButton}>
-              <Text style={styles.categoryButtonText}>Detective</Text>
             </TouchableOpacity>
             {/* Add more categories as needed */}
           </ScrollView>
@@ -115,35 +98,20 @@ const MoviesScreen = ( {navigation }) => {
         {/* Trending Now */}
         <View style={styles.trendingContainer}>
           <Text style={styles.sectionTitle}>Popular Movies</Text>
-          {/* Horizontal FlatList for Trending Movies */}
-          <FlatList
-            horizontal
-            data={shuffledTrendingMovies}
-            renderItem={({ item }) => renderMovieItem({ item })}
-            keyExtractor={item => item.id.toString()}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.movieList}
-          />
+          {/* Render movies */}
+          <View style={styles.moviesContainer}>
+            {shuffledTrendingMovies.map((movie) => (
+              renderMovieItem({ item: movie })
+            ))}
+          </View>
         </View>
 
-        {/* Continue Watching */}
-        <View style={styles.continueWatchingContainer}>
-          {/* List of Continue Watching items */}
-          <FlatList
-            horizontal
-            data={shuffledContinueWatchingMovies}
-            renderItem={({ item }) => renderMovieItem({ item, section: "continueWatching" })}
-            keyExtractor={item => item.id.toString()}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.movieList}
-          />
-        </View>
-
-        {/* More Sections as Needed */}
       </ScrollView>
     </View>
   );
 };
+
+const windowWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
@@ -163,25 +131,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 10,
-  },
-  featuredContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  featuredItem: {
-    marginRight: 10,
-    alignItems: 'center',
-  },
-  featuredItemImage: {
-    width: 300,
-    height: 180,
-    borderRadius: 10,
-  },
-  featuredItemTitle: {
-    color: '#FFF',
-    marginTop: 5,
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   categoriesContainer: {
     marginTop: 20,
@@ -212,41 +161,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  continueWatchingContainer: {
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  movieList: {
-    paddingHorizontal: 5,
+  moviesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   movieItem: {
-    marginRight: 10,
+    width: '48%', // Adjust according to your layout
+    marginBottom: 20,
   },
   movieItemImage: {
-    width: 120,
-    height: 180,
+    width: '100%',
+    height: 220, // Adjusted height
     borderRadius: 10,
   },
   movieItemTitle: {
     color: '#FFF',
     marginTop: 5,
-  },
-  progressBar: {
-    width: '100%',
-    height: 5,
-    backgroundColor: '#444',
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginTop: 5,
-  },
-  progress: {
-    height: '100%',
-    backgroundColor: '#FFF',
+    padding: 5,
   },
 });
 
 MoviesScreen.navigationOptions = {
-    headerShown: false, // This hides the header title
-  };
+  headerShown: false, // This hides the header title
+};
 
 export default MoviesScreen;
