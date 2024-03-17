@@ -165,7 +165,7 @@ const HomeScreen = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    marginTop: 45,
+    marginTop: 5,
     flex: 1,
     backgroundColor: "#000",
   },

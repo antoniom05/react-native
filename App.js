@@ -35,18 +35,9 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 0, // Ensure no padding
+    margin: 0, // Ensure no margin
     zIndex: 1, // Set zIndex to ensure the video is rendered above other components
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 2, // Set zIndex higher than the video to ensure it's rendered on top
-  },
-  overlayText: {
-    color: "#fff",
-    fontSize: 20,
   },
 });
 

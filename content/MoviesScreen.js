@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   container: {
-    marginTop: 25,
+    marginTop: 5,
     flex: 1,
     backgroundColor: "#000",
   },
