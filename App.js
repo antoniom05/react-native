@@ -1,14 +1,53 @@
-import React from 'react'
-import HomeScreen from './HomeScreen'
-import MainContainer from './MainContainer'
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import Video from "react-native-video";
+import MainContainer from "./content/MainContainer";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const App = () => {
+  const [showApp, setShowApp] = useState(false);
+
+  const onEnd = () => {
+    setShowApp(true);
+  };
+
   return (
     <>
-      <MainContainer />
-      
+      {!showApp ? (
+        <View style={styles.container}>
+          <Video
+            source={require("./assets/intro.mp4")}
+            style={StyleSheet.absoluteFillObject}
+            resizeMode="cover"
+            onEnd={onEnd}
+          />
+        </View>
+      ) : (
+        <MainContainer />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default App
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    zIndex: 1, // Set zIndex to ensure the video is rendered above other components
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: 2, // Set zIndex higher than the video to ensure it's rendered on top
+  },
+  overlayText: {
+    color: "#fff",
+    fontSize: 20,
+  },
+});
+
+export default App;
